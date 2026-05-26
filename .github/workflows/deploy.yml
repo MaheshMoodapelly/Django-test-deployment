@@ -10,15 +10,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        - name: Check secrets
+          run: | 
+            echo "HOST is set: ${{ secrets.HOST != '' }}"
+            echo "KEY is set: ${{ secrets.EC2_SSH_KEY != '' }}"
+
+
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
-
         with:
           host: ${{ secrets.HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
           script: |
-            cd ~/django-cicd-demo || exit
+            set -e
+            cd ~/django-cicd-demo
             git pull origin main
             source venv/bin/activate
             pip install -r requirements.txt
